@@ -24,6 +24,9 @@ reset:
   jsr lcd_instruction
   lda #%00000110  ; Increment and shift cursor; don't shift display
   jsr lcd_instruction
+  lda #%00000001  ; Clear display
+  jsr lcd_instruction
+
 
   lda #"H"
   jsr print_char
@@ -51,7 +54,30 @@ reset:
 loop:
   jmp loop
 
+lcd_wait
+  pha             ; push A to stack
+  lda #%00000000  ; Port B is input
+  sta DDRB
+lcdbusy:
+  lda #RW
+  sta PORTA
+  lda #(RW | E)
+  sta PORTA
+  lda PORTB
+  and #%10000000
+  bne lcdbusy
+
+  lda #RW         ; Clear E bit
+  sta PORTA
+
+  lda #%11111111  ; Port B is output
+  sta DDRB
+  pla             ; pop A from stack
+  rts
+
+
 lcd_instruction:
+  jsr lcd_wait
   sta PORTB
   lda #0          ; Clear RS/RW/E bits
   sta PORTA
@@ -62,6 +88,7 @@ lcd_instruction:
   rts
 
 print_char:
+  jsr lcd_wait
   sta PORTB
   lda #RS          ; Set RS; Clear RW/E bits
   sta PORTA
