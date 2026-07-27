@@ -3,34 +3,30 @@ PORTA = $6001
 DDRB = $6002
 DDRA = $6003
 
-E = %10000000     ; 1 for enable
-RW = %01000000    ; 1 for read 0 for write
-RS = %00100000
+E  = %01000000
+RW = %00100000
+RS = %00010000
 
   .org $8000
 
 reset:
-  ldx #$ff        ; Initialise la pile
+  ldx #$ff        ; Initialize the stack pointer to 01ff
   txs
 
-  lda #%11111111  ; Port B en sortie
+  lda #%11111111  ; Set all pins on port B to output
   sta DDRB
   
-  lda #%11100000  ; (Optionnel si tu n'utilises pas le Port A pour l'instant)
+  lda #%00000000 ; Set all pins on port A to input
   sta DDRA
 
-  jsr lcd_init    ; 1. OBLIGATOIRE : Bascule l'écran en 4 bits
-
-  lda #%00101000  ; 2. Config : Mode 4-bit (0010), 2 lignes, police 5x8
+  jsr lcd_init
+  lda #%00101000 ; Set 4-bit mode; 2-line display; 5x8 font
   jsr lcd_instruction
-  
-  lda #%00001110  ; Display on; cursor on; blink off
+  lda #%00001110 ; Display on; cursor on; blink off
   jsr lcd_instruction
-  
-  lda #%00000110  ; Increment and shift cursor
+  lda #%00000110 ; Increment and shift cursor; don't shift display
   jsr lcd_instruction
-  
-  lda #%00000001  ; Clear display
+  lda #%00000001 ; Clear display
   jsr lcd_instruction
 
   ldx #0
@@ -45,6 +41,15 @@ loop:
   jmp loop
 
 message: .asciiz "Bisou Elise"
+
+lcd_init:
+  lda #%00000010 ; Set 4-bit mode
+  sta PORTB
+  ora #E
+  sta PORTB
+  and #%00001111
+  sta PORTB
+  rts
 
 lcd_wait:
   pha
@@ -73,14 +78,6 @@ lcdbusy:
   pla
   rts
 
-lcd_init:
-  lda #%00000010 ; Set 4-bit mode
-  sta PORTB
-  ora #E
-  sta PORTB
-  and #%00001111
-  sta PORTB
-  rts
 
 lcd_instruction:
   jsr lcd_wait
@@ -125,7 +122,6 @@ print_char:
   eor #E          ; Clear E bit
   sta PORTB
   rts
-
 
   .org $fffc
   .word reset     ; Reset vector
