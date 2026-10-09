@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "W65C02S6TPG-14"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2019-12-18-16:15:28)
+    (mountForm default
+        (footprintRef "DIP1524W56P254L5207H508Q40N")
+        (spec "System")
+    )
+)

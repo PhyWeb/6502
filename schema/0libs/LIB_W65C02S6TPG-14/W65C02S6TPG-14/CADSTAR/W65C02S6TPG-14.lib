@@ -1,0 +1,16 @@
+.W65C02S6TPG-14 :1 ;Microprocessors - MPU 8-bit Microprocessor
+DIP1524W56P254L5207H508Q40N
+*STM IC
+*NGS
+*PLB 1="VPB" 2="RDY" 3="PHI1O" 4="IRQB" 5="MLB" 6="NMIB" 7="SYNC" 8="VDD" 9="A0" 10="A1" 11="A2" 12="A3" 13="A4" 14="A5" 15="A6" 16="A7" 17="A8" 18="A9" 19="A10" 20="A11" 21="VSS" 22="A12" 23="A13" 24="A14" 25="A15" 26="D7" 27="D6" 28="D5" 29="D4" 30="D3" 31="D2" 32="D1" 33="D0" 34="RWB" 35="NC" 36="BE" 37="PHI2" 38="SOB" 39="PHI2O" 40="RESB"
+*MXP 40
+*DFN W65C02S6TPG-14
+~!Mouser Part Number (955-W65C02S6TPG-14)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Western-Design-Center-WDC/W65C02S6TPG-14?qs=opBjA1TV903lvWo9AEKH5w%3D%3D)
+~!Manufacturer_Name (Western Design Center (WDC))
+~!Manufacturer_Part_Number (W65C02S6TPG-14)
+~!Link Datasheet (https://componentsearchengine.com/Datasheets/1/W65C02S6TPG-14.pdf)
+~!Height (5.08mm)
+~!3D_Model (W65C02S6TPG-14)
+W65C02S6TPG-14
+1.1!U 2.1!U 3.1!U 4.1!I 5.1!U 6.1!I 7.1!Y 8.1!P 9.1!Y 10.1!Y 11.1!Y 12.1!Y 13.1!Y 14.1!Y 15.1!Y 16.1!Y 17.1!Y 18.1!Y 19.1!Y 20.1!Y 40.1!I 39.1!U 38.1!U 37.1!U 36.1!U 35.1!U 34.1!Y 33.1!Y 32.1!Y 31.1!Y 30.1!Y 29.1!Y 28.1!Y 27.1!Y 26.1!Y 25.1!Y 24.1!Y 23.1!Y 22.1!Y 21.1!G 

@@ -20,7 +20,7 @@ Le système repose sur un bus passif utilisant des connecteurs industriels robus
 **Signaux principaux :**
 - Alimentation (`5V`, `GND`).
 - Bus d'Adresses (`A0-A19` standards, `A20-A23` sur broches réservées) et Bus de Données (`D0-D7`).
-- Signaux de Contrôle : `CLK` (Généré par la broche `PHI2` sortante du CPU), `/WR`, `/RD`, `/IORQ`, `/MREQ`, `/RESET`, `/INT`, `/NMI`.
+- Signaux de Contrôle : `CLK` (Généré par la broche `PHI2O` sortante du CPU), `/WR`, `/RD`, `/IORQ`, `/MREQ`, `/RESET`, `/INT`, `/NMI`.
 
 ---
 
@@ -41,9 +41,9 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 ### A. Carte CPU (6502 Core Card)
 - **Ports Externes :** Aucun (Interne uniquement).
-- **Interface Utilisateur :** Cavaliers (Jumpers) pour la sélection de fréquence, et bouton poussoir pour le mode pas-à-pas.
+- **Interface Utilisateur :** Cavaliers (Jumpers) pour la sélection de fréquence, et pins pour relier une horloge externe (pas à pas notamment), pins pour relier le bouton reset.
 - **Composants :** W65C02S, Oscillateur 8 MHz, Diviseur binaire (`74HC393`), Inverseur (`74HC14`), Superviseur de Reset (DS1813).
-- **Horloge :** L'oscillateur 8 MHz entre dans `PHI0` (Pin 37). Le processeur conditionne le signal et le ressort sur `PHI2` (Pin 39). C'est ce signal `PHI2` (nommé `CLK` sur le bus MECB) qui cadence tout le système.
+- **Horloge :** L'oscillateur 8 MHz entre dans `PHI2` (Pin 37). Le processeur conditionne le signal et le ressort sur `PHI2O` (Pin 39). C'est ce signal `PHI2O` (nommé `CLK` sur le bus MECB) qui cadence tout le système.
 
 ### B. Carte Mémoire RAM & MMU
 - **Ports Externes :** Aucun.
@@ -83,12 +83,15 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 ---
 
 ## 6. Conception du Fond de Panier (Backplane PCB Design)
-- **Topologie des Slots :** 7 ports DIN 41612 (Type C, rangées a et c). 6 ports verticaux pour les cartes de base, et 1 port horizontal (coudé à 90°) pour faciliter le débogage (analyseur logique) ou servir de futur port d'extension.
-- **Alimentation Intégrée :** Le circuit d'alimentation est directement sur le backplane : connecteur Barrel Jack (5V), interrupteur, diode de protection, gros condensateurs de filtrage (ex: 1000µF) en entrée, et condensateurs céramiques de découplage (100nF) au plus près de chaque port DIN.
+- **Topologie des Slots :** 8 ports DIN 41612 (Type C, rangées a et c). 7 ports verticaux pour les cartes de base, et 1 port horizontal (coudé à 90°) pour faciliter le débogage (analyseur logique) ou servir de futur port d'extension.
+- **Alimentation Intégrée :** Le circuit d'alimentation est directement sur le backplane : connecteur Barrel Jack (5V), interrupteur (prévoire possibilité de passer par un bouton externe), diode de protection(attention : chute de tension, privilegier un mosfet canal P ?), gros condensateurs de filtrage (ex: 1000µF) en entrée, et condensateurs céramiques de découplage (100nF) au plus près de chaque port DIN.
 - **Intégrité du signal (Haute Fréquence - 8 MHz) :**
   - **Routage PCB 4 Couches :** Utilisation stricte de plans internes continus pour la Masse (Couche 2 : GND) et l'Alimentation (Couche 3 : 5V) pour bloquer les interférences.
-  - **Isolation :** La piste d'horloge (`PHI2` / `CLK`) est entourée de plans de masse.
+  - **Isolation :** La piste d'horloge (`PHI2O` / `CLK`) est entourée de plans de masse.
   - **Terminaisons :** Empreintes prévues aux extrémités du bus pour l'ajout éventuel de réseaux de résistances de tirage (Pull-up 3.3kΩ) afin d'absorber les rebonds de signaux.
+
+- **Notes :**
+  - Prévoir un pullup de 10k sur la ligne reset au cas ou la carte cpu est pas présente.
 
 ---
 
@@ -99,50 +102,53 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 ---
 
-## Annexe : Brochage Officiel du Bus MECB (Connecteur DIN 41612)
-
-Connecteur DIN 41612 (Type C, 64 broches, rangées **a** et **c**).
-*Note : Sur un système 6502, `CLK` = `PHI2`, `/INT` = `/IRQ`.*
+### Le brochage optimisé (Bus 6502 Direct - Prêt pour 65C816)
 
 **Code Couleur :**
 *   🔴 Alimentation (Power)
 *   🔵 Bus de Données (Data Bus, 8-bit)
-*   🟢 Bus d'Adresses (Address Bus, 64K)
-*   🟣 Extension d'Adresses (Address Bus Ext, 1M optional - *Routées pour futur CPU 16-bits*)
-*   🟠 Signaux de Contrôle (Control Signals)
+*   🟢 Bus d'Adresses (Address Bus, 64 Ko natif)
+*   🟣 Extension d'Adresses (Address Bus Ext, 16 Mo pour futur 65C816)
+*   🟠 Signaux de Contrôle 6502
 *   ⚪ Réservé / Libre (*resv* / *user*)
 
-| Broche | Rangée a | Rangée c |
-| :---: | :--- | :--- |
-| **1** | 🔴 `5V` | 🔴 `5V` |
-| **2** | 🔵 `D5` | 🔵 `D0` |
-| **3** | 🔵 `D6` | 🔵 `D7` |
-| **4** | 🔵 `D3` | 🔵 `D2` |
-| **5** | 🔵 `D4` | 🟢 `A0` |
-| **6** | 🟢 `A2` | 🟢 `A3` |
-| **7** | 🟢 `A4` | 🟢 `A1` |
-| **8** | 🟢 `A5` | 🟢 `A8` |
-| **9** | 🟢 `A6` | 🟢 `A7` |
-| **10** | ⚪ *resv* | 🟣 `A16` |
-| **11** | ⚪ *resv* | ⚪ *resv* |
-| **12** | ⚪ *resv* | 🟣 `A17` |
-| **13** | ⚪ *user* | 🟣 `A18` |
-| **14** | 🟣 `A19` | 🔵 `D1` |
-| **15** | ⚪ *user* | ⚪ *user* |
-| **16** | ⚪ *resv* | ⚪ *resv* |
-| **17** | ⚪ *resv* | 🟢 `A11` |
-| **18** | 🟢 `A14` | 🟢 `A10` |
-| **19** | ⚪ *user* | ⚪ *resv* |
-| **20** | 🟠 `/M1` | 🟠 `/NMI` |
-| **21** | ⚪ *resv* | 🟠 `/INT` |
-| **22** | ⚪ *resv* | 🟠 `/WR` |
-| **23** | ⚪ *resv* | ⚪ *resv* |
-| **24** | ⚪ *resv* | 🟠 `/RD` |
-| **25** | ⚪ *resv* | ⚪ *resv* |
-| **26** | ⚪ *resv* | ⚪ *resv* |
-| **27** | 🟠 `/IORQ` | 🟢 `A12` |
-| **28** | ⚪ *resv* | 🟢 `A15` |
-| **29** | 🟢 `A13` | 🟠 `CLK` |
-| **30** | 🟢 `A9` | 🟠 `/MREQ` |
-| **31** | ⚪ *resv* | 🟠 `/RESET` |
-| **32** | 🔴 `GND` | 🔴 `GND` |
+| Broche DIN | Rangée a (Côté Gauche du CPU) | Rangée c (Côté Droit du CPU) | Explication du routage |
+| :---: | :--- | :--- | :--- |
+| **1** | 🔴 `5V` | 🔴 `5V` | Alimentation globale (Haut du connecteur). |
+| **2** | ⚪ *réservé* | 🟠 `/RES` *(CPU Pin 40)* | Ligne droite depuis le haut droit du CPU. |
+| **3** | 🟠 `/IRQ` *(CPU Pin 4)* | 🟠 `PHI2O` *(CPU Pin 39)* | Ligne droite. |
+| **4** | 🟠 `/NMI` *(CPU Pin 6)* | 🟠 `R/W` *(CPU Pin 34)* | Ligne droite. |
+| **5** | 🟢 `A0` *(CPU Pin 9)* | 🔵 `D0` *(CPU Pin 33)* | **Début des bus (Lignes droites parallèles)** |
+| **6** | 🟢 `A1` *(CPU Pin 10)* | 🔵 `D1` *(CPU Pin 32)* | |
+| **7** | 🟢 `A2` *(CPU Pin 11)* | 🔵 `D2` *(CPU Pin 31)* | |
+| **8** | 🟢 `A3` *(CPU Pin 12)* | 🔵 `D3` *(CPU Pin 30)* | |
+| **9** | 🟢 `A4` *(CPU Pin 13)* | 🔵 `D4` *(CPU Pin 29)* | |
+| **10** | 🟢 `A5` *(CPU Pin 14)* | 🔵 `D5` *(CPU Pin 28)* | |
+| **11** | 🟢 `A6` *(CPU Pin 15)* | 🔵 `D6` *(CPU Pin 27)* | |
+| **12** | 🟢 `A7` *(CPU Pin 16)* | 🔵 `D7` *(CPU Pin 26)* | |
+| **13** | 🟢 `A8` *(CPU Pin 17)* | 🟢 `A15` *(CPU Pin 25)* | |
+| **14** | 🟢 `A9` *(CPU Pin 18)* | 🟢 `A14` *(CPU Pin 24)* | |
+| **15** | 🟢 `A10` *(CPU Pin 19)* | 🟢 `A13` *(CPU Pin 23)* | |
+| **16** | 🟢 `A11` *(CPU Pin 20)* | 🟢 `A12` *(CPU Pin 22)* | **Fin des bus du 6502 (Bas du CPU)** |
+| **17** | 🟣 `A16` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **18** | 🟣 `A17` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **19** | 🟣 `A18` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **20** | 🟣 `A19` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **21** | 🟣 `A20` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **22** | 🟣 `A21` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **23** | 🟣 `A22` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **24** | 🟣 `A23` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits |
+| **25 à 31**| ⚪ *libres / user* | ⚪ *libres / user* | Signaux personnalisés (audio, vidéo, I/O) |
+| **32** | 🔴 `GND` | 🔴 `GND` | Masse globale (Bas du connecteur). |
+
+## Annexe : GALs et timings
+Puisque tu utilises cette architecture, voici le point crucial pour la programmation de tes GALs (WinCUPL / GALasm) pour que le timing fonctionne :
+
+Chip Select (/CS ou /CE) : L'équation qui active la mémoire NE DOIT PAS inclure l'horloge système (PHI2O / CLK). Elle doit dépendre uniquement du bus d'adresses (A8-A19). Ainsi, la puce mémoire s'allume et se prépare dès la phase basse de l'horloge.
+
+Output Enable (/OE pour la lecture) et Write Enable (/WE pour l'écriture) : Ces signaux DOIVENT inclure l'horloge système (PHI2O / CLK) dans l'équation du GAL. C'est ce qui garantit que la SRAM ou la Flash n'écrit ou ne pousse ses données sur le bus que lorsque le 6502 est prêt (phase haute).
+
+Exemple simplifié d'équation pour la RAM ($0000 - $7FFF) :
+RAM_CS = !A15 ;
+RAM_OE = RAM_CS & PHI2O & RW ; (Sort les données uniquement sur phase haute)
+RAM_WE = RAM_CS & PHI2O & !RW ; (Écrit uniquement sur phase haute)
