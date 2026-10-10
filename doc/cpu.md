@@ -20,8 +20,6 @@ Cette carte constitue le cœur du système modulaire. Le processeur WDC 65C02S p
 | **38** | `SOB` | `5V` (Direct ou Pull-up) | **Entrée critique :** Maintenue à l'état haut pour empêcher le déclenchement erratique du flag Overflow par les parasites. |
 | **1, 5** | `VPB`, `SYNC` | Non Connectées (NC) | Sorties. Possibilité d'ajouter des points de test. *(Broche 44 MLB retirée car exclusive aux boîtiers CMS).* |
 
-*(Note sur le routage : Pour les broches 2, 4 et 6 situées en haut à gauche du processeur, l'utilisation d'un boîtier réseau de résistances SIP bussé / à point commun est recommandée pour gagner de la place et simplifier le routage).*
-
 ## 3. Circuit de Reset (Superviseur DS1813)
 Le composant **DS1813** remplace les circuits RC traditionnels. Il garantit une initialisation parfaite du processeur et du fond de panier, avec un temps de maintien de 150 ms (laissant l'oscillateur se stabiliser). 
 
@@ -35,10 +33,11 @@ Le composant **DS1813** remplace les circuits RC traditionnels. Il garantit une 
 Le système d'horloge fournit plusieurs fréquences sélectionnables via un bloc de cavaliers (jumpers), allant de la pleine vitesse (jusqu'à 8 MHz) à un mode pas-à-pas externe pour le débogage.
 
 - **Source Primaire :** Oscillateur actif (boîtier métal 4 broches, sur support tulipe pour échange facile). Connecté au `5V`, `GND`, avec sa sortie vers le diviseur et le bloc de sélection.
-- **Diviseur (74HC393) :**
-  - Entrée `1CP` : Reçoit le signal natif de l'oscillateur.
-  - Entrée `1MR` : Connectée à `GND`.
-  - Sorties : Division binaire `/2`, `/4`, `/8`, `/16` (ex: 4 MHz, 2 MHz, 1 MHz, 500 kHz).
+- **Diviseur (74HC393 - Utilisation d'un seul compteur sur les deux) :**
+  - Entrée `1CP` (Pin 1) : Reçoit le signal natif 8 MHz de l'oscillateur.
+  - Entrée `1MR` (Pin 2) : Connectée à `GND`.
+  - Sorties utilisées : `1Q0` (4 MHz), `1Q1` (2 MHz), `1Q2` (1 MHz), `1Q3` (500 kHz).
+  - *Gestion de la moitié inutilisée :* Les entrées `2CP` (Pin 12) et `2MR` (Pin 13) sont reliées à `GND` pour éviter les oscillations parasites. Les sorties `2Q` sont laissées non connectées.
 - **Entrée Externe (Pas-à-pas) :** Pin connectée à la source d'horloge manuelle externe (déjà conditionnée anti-rebond).
 - **Bloc de Sélection (Jumpers) :** Connecteur 2x6 pins. La rangée de gauche expose chaque fréquence disponible + l'entrée externe. La rangée de droite est commune et achemine le signal sélectionné vers l'entrée **`PHI2`** (Broche 37) du 65C02S. *(Attention : un changement de cavalier à chaud provoque des glitchs d'horloge ; toujours éteindre ou maintenir le reset enfoncé pendant la manipulation).*
 
