@@ -7,8 +7,9 @@ Cette carte constitue le cœur du système modulaire. Le processeur WDC 65C02S p
 
 | Broche(s) 65C02S | Nom | Destination / Connexion | Remarque |
 | :--- | :--- | :--- | :--- |
-| **9 à 25** | `A0 - A15` | Connecteur MECB (Adresses) | Pilotage direct du bus. |
+| **9-20, 22-25** | `A0 - A15` | Connecteur MECB (Adresses) | Pilotage direct du bus (Pin 21 = `GND`). |
 | **26 à 33** | `D0 - D7` | Connecteur MECB (Données) | Pilotage direct du bus. |
+| **8, 21** | `VDD`, `VSS` | `5V`, `GND` | Alimentation du processeur. |
 | **39** | `PHI2O` | Connecteur MECB (`CLK`) | Horloge système générée par le CPU. |
 | **34** | `R/W` | Connecteur MECB (`R/W`) | Direction de transfert (Read/Write). |
 | **4** | `/IRQ` | Connecteur MECB (`/IRQ`) | Tirage vers le 5V (Pull-up 3.3 kΩ) sur la carte CPU*. |
@@ -27,7 +28,7 @@ Le composant **DS1813** remplace les circuits RC traditionnels. Il garantit une 
 - **Connexions du DS1813 :** Broches d'alimentation sur `5V` et `GND`.
 - **Sortie `/RST` :** Connectée à la broche 40 (`/RES`) du 65C02S **et** à la ligne `/RESET` du bus MECB.
 - **Pull-up :** Aucun pull-up additionnel n'est requis sur la carte CPU pour le reset (le DS1813 intègre déjà un pull-up de ~5.5 kΩ). Une résistance de tirage de 3.3 kΩ se trouve sur le fond de panier.
-- **Bouton Reset :** Le bouton est déporté en façade du boîtier et branché sur le fond de panier (reliant la ligne globale `/RESET` à la Masse). Le DS1813 sur la carte CPU détectera cette mise à la masse, absorbera les rebonds matériels, et prolongera le signal à 0V pendant 150 ms pour garantir un démarrage synchronisé de l'ordinateur.
+- **Bouton Reset :** Un bouton poussoir est présent sur le fond de panier pour les tests, doublé d'un connecteur pour le bouton déporté en façade du boîtier (reliant la ligne globale `/RESET` à la Masse). Le DS1813 sur la carte CPU détectera cette mise à la masse, absorbera les rebonds matériels, et prolongera le signal à 0V pendant 150 ms pour garantir un démarrage synchronisé de l'ordinateur.
 
 ## 4. Génération et Sélection d'Horloge
 Le système d'horloge fournit plusieurs fréquences sélectionnables via un bloc de cavaliers (jumpers), allant de la pleine vitesse (jusqu'à 8 MHz) à un mode pas-à-pas externe pour le débogage.
@@ -45,4 +46,4 @@ Le système d'horloge fournit plusieurs fréquences sélectionnables via un bloc
 La stabilité à haute fréquence sans l'utilisation de buffers de bus dépend strictement de la propreté de l'alimentation locale.
 
 - **Découplage IC :** Un condensateur céramique de **100 nF** doit être placé le plus près possible des broches `5V` et `GND` de chaque circuit intégré (65C02S, DS1813, 74HC393, Oscillateur).
-- **Filtrage Global :** Un condensateur électrolytique de **10 µF** est placé à proximité du connecteur DIN 41612 pour lisser les appels de courant globaux de la carte.
+- **Filtrage Global :** Aucun condensateur électrolytique n'est présent sur la carte. Le lissage des appels de courant globaux est délégué au fond de panier (qui dispose d'un condensateur réservoir de 10 µF assigné à chaque slot).

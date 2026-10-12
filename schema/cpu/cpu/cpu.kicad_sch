@@ -5134,6 +5134,17 @@
 		)
 		(uuid "c8d6ad01-28b2-40a9-8e77-04b1b1f44033")
 	)
+	(text "BUS"
+		(exclude_from_sim no)
+		(at 19.05 24.13 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "21680ef7-fd5e-4612-b754-1c15bbd30327")
+	)
 	(text "A déporter sur la backplate"
 		(exclude_from_sim no)
 		(at 209.55 29.21 0)
@@ -5146,31 +5157,34 @@
 	)
 	(text "CPU"
 		(exclude_from_sim no)
-		(at 187.198 70.104 0)
+		(at 185.42 70.104 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
 		(uuid "40f5abc9-9996-4785-8fd2-9be52cc738ec")
 	)
 	(text "Clock"
 		(exclude_from_sim no)
-		(at 87.63 24.13 0)
+		(at 85.09 24.13 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
 		(uuid "45f3c97d-89fb-4791-8a7c-c18853bcf115")
 	)
 	(text "Reset"
 		(exclude_from_sim no)
-		(at 192.786 24.13 0)
+		(at 190.5 24.13 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
 		(uuid "c1f0601b-affd-46ef-95fb-f0717c62e4f5")
 	)
@@ -5185,6 +5199,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "25b6cc84-44bd-44c1-b509-231a42c8dc5b")
+	)
+	(junction
+		(at 92.71 91.44)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "36feba2d-c3c3-4337-b4be-c5e273e70ada")
 	)
 	(junction
 		(at 45.72 124.46)
@@ -5217,6 +5237,12 @@
 		(uuid "793cbc4d-c634-45fd-b05c-c88708a443b0")
 	)
 	(junction
+		(at 39.37 38.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "81c64747-e03a-4b13-9a15-3b1b923a52a2")
+	)
+	(junction
 		(at 222.25 40.64)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5241,6 +5267,12 @@
 		(uuid "b0bbac59-7f67-4175-bef5-c3c68bffb92f")
 	)
 	(junction
+		(at 52.07 124.46)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b54242b6-4f88-49b3-bd5c-86beb4b1807a")
+	)
+	(junction
 		(at 45.72 38.1)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5263,6 +5295,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "f7dece54-812d-4cb8-af85-c3ca02ab1300")
+	)
+	(junction
+		(at 100.33 85.09)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f8a8582c-8422-4a0a-923a-3841adab64cd")
 	)
 	(no_connect
 		(at 52.07 82.55)
@@ -5407,6 +5445,10 @@
 	(no_connect
 		(at 52.07 97.79)
 		(uuid "e5faae02-1117-406a-b50e-96b726c8f2a2")
+	)
+	(no_connect
+		(at 135.89 63.5)
+		(uuid "ff16a9ab-64d8-4122-9e3b-1c236ad6aec0")
 	)
 	(no_connect
 		(at 218.44 92.71)
@@ -6766,6 +6808,16 @@
 	)
 	(wire
 		(pts
+			(xy 100.33 85.09) (xy 100.33 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c0c06986-6c35-4603-9aa0-aee7bdce8588")
+	)
+	(wire
+		(pts
 			(xy 39.37 38.1) (xy 45.72 38.1)
 		)
 		(stroke
@@ -6936,16 +6988,6 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 186.69) (xy 46.99 189.23)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e35e021b-fa4b-4581-bee1-db2dce74a1b2")
-	)
-	(wire
-		(pts
 			(xy 27.94 69.85) (xy 39.37 69.85)
 		)
 		(stroke
@@ -7026,16 +7068,6 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 186.69) (xy 38.1 186.69)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f6578d5e-cfca-4876-9be5-13480d9d5b72")
-	)
-	(wire
-		(pts
 			(xy 110.49 63.5) (xy 110.49 64.77)
 		)
 		(stroke
@@ -7073,6 +7105,16 @@
 			(type default)
 		)
 		(uuid "fb096411-b544-44e9-b510-5acf0b1cfa06")
+	)
+	(wire
+		(pts
+			(xy 92.71 85.09) (xy 92.71 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb4a9a6c-c2c0-4f54-b6db-18a40d1c1684")
 	)
 	(wire
 		(pts
@@ -8724,6 +8766,85 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 96.52 91.44 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "38122820-857f-4adc-a240-7ddb9ffb74de")
+		(property "Reference" "C4"
+			(at 99.06 93.472 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100nF"
+			(at 99.06 95.504 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 100.33 90.4748 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 96.52 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 96.52 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "d82bbc07-c733-436b-80f6-5165e2ddce42")
+		)
+		(pin "1"
+			(uuid "ffb6796d-6844-45c7-bd61-76dccae8eddd")
+		)
+		(instances
+			(project "cpu"
+				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+5V")
 		(at 96.52 33.02 0)
 		(unit 1)
@@ -8918,8 +9039,8 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 46.99 186.69 0)
+		(lib_id "power:GND")
+		(at 92.71 91.44 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8928,9 +9049,86 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "4fa3bbec-abd4-4e38-ae87-61b8b37de1c3")
-		(property "Reference" "#FLG02"
-			(at 46.99 184.785 0)
+		(uuid "546e62ec-8625-492d-8ad8-5ed28ca5e0d5")
+		(property "Reference" "#PWR023"
+			(at 92.71 97.79 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 92.71 96.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 92.71 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 92.71 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 92.71 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "93813b54-4bb7-4592-b0d0-8d0bfd26424f")
+		)
+		(instances
+			(project "cpu"
+				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
+					(reference "#PWR023")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 52.07 124.46 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "5c857c0c-353a-4a96-be3f-4eacca74447e")
+		(property "Reference" "#FLG03"
+			(at 52.07 126.365 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8941,7 +9139,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 46.99 181.61 0)
+			(at 58.674 126.238 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -8951,7 +9149,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm"
-			(at 46.99 186.69 0)
+			(at 52.07 124.46 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8962,7 +9160,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 46.99 186.69 0)
+			(at 52.07 124.46 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8973,7 +9171,7 @@
 			)
 		)
 		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 46.99 186.69 0)
+			(at 52.07 124.46 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8984,20 +9182,20 @@
 			)
 		)
 		(pin "1"
-			(uuid "2b973168-b03b-4c8b-9617-a8e791cf5a3c")
+			(uuid "e656b6b5-9b8b-49e2-8a77-d94a7af954fe")
 		)
 		(instances
 			(project "cpu"
 				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
-					(reference "#FLG02")
+					(reference "#FLG03")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 38.1 186.69 0)
+		(lib_id "Device:C")
+		(at 96.52 85.09 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9005,11 +9203,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "5f138a64-88bd-4907-b629-c27c077d693e")
-		(property "Reference" "#PWR018"
-			(at 38.1 190.5 0)
-			(hide yes)
+		(uuid "5dea1fd6-3b0f-4768-a44c-3b05a3032a4d")
+		(property "Reference" "C3"
+			(at 95.504 78.74 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9018,8 +9214,8 @@
 				)
 			)
 		)
-		(property "Value" "+5V"
-			(at 38.1 181.61 0)
+		(property "Value" "100nF"
+			(at 95.504 81.28 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9029,7 +9225,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 38.1 186.69 0)
+			(at 100.33 84.1248 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9040,7 +9236,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 38.1 186.69 0)
+			(at 96.52 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9050,8 +9246,8 @@
 				)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 38.1 186.69 0)
+		(property "Description" "Unpolarized capacitor"
+			(at 96.52 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9060,14 +9256,17 @@
 					(size 1.27 1.27)
 				)
 			)
+		)
+		(pin "2"
+			(uuid "7f2c758e-2949-441d-8405-a405d6747e64")
 		)
 		(pin "1"
-			(uuid "2e91d03b-a149-4b72-b4e5-e1697c8653b0")
+			(uuid "e7b2af91-71a1-48ea-8111-abef5ecb1176")
 		)
 		(instances
 			(project "cpu"
 				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
-					(reference "#PWR018")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -9147,84 +9346,6 @@
 			(project "cpu"
 				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
 					(reference "R1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 46.99 189.23 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "673e9b10-9971-4617-ae18-90a4a6139ba3")
-		(property "Reference" "#PWR019"
-			(at 46.99 195.58 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GND"
-			(at 46.99 194.31 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 46.99 189.23 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 46.99 189.23 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 46.99 189.23 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "02077085-37b5-470c-a371-af994af3a7b6")
-		)
-		(instances
-			(project "cpu"
-				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
-					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -10334,6 +10455,83 @@
 		)
 	)
 	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 39.37 38.1 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "bf3d76d1-b81b-48c4-89c4-1d053da0f31e")
+		(property "Reference" "#FLG01"
+			(at 39.37 36.195 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 33.02 36.83 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm"
+			(at 39.37 38.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 39.37 38.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 39.37 38.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7ea782ac-5d70-4e8a-83c3-b5e529d5d983")
+		)
+		(instances
+			(project "cpu"
+				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
+					(reference "#FLG01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+5V")
 		(at 248.92 55.88 0)
 		(unit 1)
@@ -10411,8 +10609,8 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 29.21 186.69 0)
+		(lib_id "power:+5V")
+		(at 100.33 85.09 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10420,10 +10618,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d1b4485d-e6b0-4e7b-b6e8-6b599a2eddc8")
-		(property "Reference" "#FLG01"
-			(at 29.21 184.785 0)
+		(uuid "d2130abb-c666-4ad4-b341-d53ba77f600f")
+		(property "Reference" "#PWR024"
+			(at 100.33 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10433,8 +10630,8 @@
 				)
 			)
 		)
-		(property "Value" "PWR_FLAG"
-			(at 29.21 181.61 0)
+		(property "Value" "+5V"
+			(at 103.378 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -10443,8 +10640,8 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm"
-			(at 29.21 186.69 0)
+		(property "Footprint" ""
+			(at 100.33 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10455,7 +10652,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 29.21 186.69 0)
+			(at 100.33 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10465,8 +10662,8 @@
 				)
 			)
 		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 29.21 186.69 0)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 100.33 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10477,12 +10674,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "5ac7eacf-bd0b-4895-a43f-74d9a886f4f2")
+			(uuid "e3f72e96-ac6c-42e0-93d3-9c83a668ca23")
 		)
 		(instances
 			(project "cpu"
 				(path "/3610ed7c-6354-40b8-991a-ef2bf3cb4baa"
-					(reference "#FLG01")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)

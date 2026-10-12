@@ -29,7 +29,7 @@ Le système repose sur un bus passif utilisant des connecteurs industriels robus
 
 * Alimentation (`5V`, `GND`).
 
-* Bus d'Adresses (`A0-A19` standards, `A20-A23` sur broches réservées) et Bus de Données (`D0-D7`).
+* Bus d'Adresses (`A0-A15` standards, `A16-A23` sur broches réservées) et Bus de Données (`D0-D7`).
 
 * Signaux de Contrôle : `CLK` (Généré par la broche `PHI2O` sortante du CPU), `/WR`, `/RD`, `/IORQ`, `/MREQ`, `/RESET`, `/INT`, `/NMI`, `BE`, `RDY`.
 
@@ -53,7 +53,7 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 * **Interface Utilisateur :** Cavaliers (Jumpers) pour la sélection de fréquence, et pins pour relier une horloge externe (pas à pas notamment), pins pour relier le bouton reset.
 
-* **Composants :** W65C02S, Oscillateur 8 MHz, Diviseur binaire (`74HC393`), Inverseur (`74HC14`), Superviseur de Reset (DS1813).
+* **Composants :** W65C02S, Oscillateur 8 MHz, Diviseur binaire (`74HC393`), Superviseur de Reset (DS1813).
 
 * **Horloge :** L'oscillateur 8 MHz entre dans `PHI2` (Pin 37). Le processeur conditionne le signal et le ressort sur `PHI2O` (Pin 39). C'est ce signal `PHI2O` (nommé `CLK` sur le bus MECB) qui cadence tout le système.
 
@@ -117,7 +117,11 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 * **Topologie des Slots :** 8 ports DIN 41612 (Type C, rangées a et c). 7 ports verticaux pour les cartes de base, et 1 port horizontal (coudé à 90°) pour faciliter le débogage (analyseur logique) ou servir de futur port d'extension.
 
-* **Alimentation Intégrée :** Le circuit d'alimentation est directement sur le backplane : connecteur Barrel Jack (5V), interrupteur (prévoir possibilité de passer par un bouton externe), transistor MOSFET Canal P (pour la protection contre l'inversion sans chute de tension), gros condensateurs de filtrage (ex: 1000µF) en entrée, et condensateurs céramiques de découplage (100nF) au plus près de chaque port DIN.
+* **Alimentation Intégrée :** Le circuit d'alimentation est directement sur le backplane : connecteur Barrel Jack (5V), transistor MOSFET Canal P (pour la protection contre l'inversion sans chute de tension), gros condensateurs de filtrage (ex: 1000µF) en entrée, et un duo de condensateurs de découplage (10µF électrolytique + 100nF céramique) au plus près de chaque port DIN pour garantir la stabilité de chaque carte fille.
+
+* **Boutons et Connecteurs (Interface / Test) :**
+  * **Alimentation :** Interrupteur d'alimentation soudé sur le PCB, doublé d'un connecteur pour brancher un interrupteur externe déporté en façade.
+  * **Reset :** Bouton poussoir (tact switch) intégré sur le PCB pour faciliter les tests à nu, doublé d'un connecteur 2 broches (pin header) pour relier le bouton de reset de la façade du boîtier (qui tire la ligne `/RESET` à la masse).
 
 * **Intégrité du signal (Haute Fréquence - 8 MHz) :**
 
