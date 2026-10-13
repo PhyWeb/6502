@@ -11,11 +11,14 @@ Le fond de panier (backplane) est l'épine dorsale du système modulaire 6502. E
 ## 2. Alimentation et Filtrage
 Une attention extrême est portée à la qualité de l'alimentation afin de compenser l'absence de buffers de bus.
 
-* **Entrée d'Alimentation :** Connecteur Barrel Jack (5V).
-* **Protection :** Un transistor MOSFET Canal P est placé en série en entrée. Contrairement à une simple diode, il protège le système contre les inversions de polarité avec une chute de tension presque nulle.
-* **Bouton d'Alimentation :**
-  * Interrupteur d'alimentation soudé directement sur le PCB.
-  * Connecteur (pin header 2 broches) permettant de brancher un interrupteur déporté en façade du boîtier.
+* **Entrée d'Alimentation :** Connecteur JST XH ou KF2510 (2 broches, pas de 2.50 mm / 2.54 mm). Ce connecteur interne polarisé reçoit le 5V et la masse (GND) depuis une prise d'alimentation déportée sur le boîtier (ex: embase USB-C panel mount avec résistances 5.1 kΩ intégrées au câble).
+* **Protection contre les Courts-Circuits :** Un fusible réarmable PTC (PolySwitch, ex: Littelfuse LVR100 ou équivalent, calibré à ~2.5A/3A) est placé tout en tête du circuit, immédiatement après l'entrée 5V. Il protège les pistes du fond de panier et l'alimentation externe en cas de court-circuit matériel.
+* **Protection Inversion de Polarité :** Un transistor MOSFET Canal P (**IRF9540N**) est placé en série après le fusible. Contrairement à une simple diode, il protège le système avec une chute de tension presque nulle.
+* **Boutons d'Alimentation (Câblage en Parallèle) :**
+  * **SW2 :** Interrupteur d'alimentation soudé directement sur le PCB (pour un usage sur banc de test).
+  * **J11 :** Connecteur JST (2 broches) permettant de brancher un interrupteur principal déporté en façade du boîtier.
+  * *Fonctionnement :* Ces deux éléments sont câblés en parallèle. La fermeture de l'un ou de l'autre suffit à allumer l'ordinateur, permettant d'utiliser la machine indifféremment nue sur un bureau ou fermée dans son boîtier.
+* **Routage de Puissance (Zone Critique) :** La zone d'alimentation (JST d'entrée ➔ Fusible PTC ➔ MOSFET ➔ Interrupteurs ➔ Condensateur 1000 µF) concentre tout l'appel de courant du système. Elle ne doit pas être routée avec des pistes standards (0.25 mm) mais avec de **larges polygones de cuivre** (zones remplies) ou des pistes de **1.5 mm à 2 mm minimum**. Le passage du courant vers les plans internes (Couches 2 et 3) doit s'effectuer via de multiples vias (3 à 4 alignés) pour éviter toute chute de tension (Voltage Drop) fatale aux signaux 8 MHz.
 * **Filtrage Étagé :**
   * *Filtrage d'entrée :* Un gros condensateur électrolytique (ex: 1000 µF) en amont pour lisser l'alimentation globale issue du bloc secteur.
   * *Filtrage localisé par slot :* Chaque connecteur DIN dispose, à son pied, de son propre duo de condensateurs : **un électrolytique de 10 µF** (pour le tirage de courant global de la carte fille) et **un céramique de 100 nF** (pour le filtrage haute fréquence du connecteur). Les cartes filles sont ainsi déchargées de la nécessité d'embarquer des condensateurs électrolytiques.
@@ -24,7 +27,7 @@ Une attention extrême est portée à la qualité de l'alimentation afin de comp
 La gestion du déclenchement manuel du Reset est centralisée sur la backplane (tandis que la carte CPU abrite la logique DS1813 pour conditionner le signal).
 
 * **Bouton de Test :** Bouton poussoir (Tact Switch) soudé sur le PCB pour faciliter les tests à nu.
-* **Bouton de Façade :** Connecteur 2 broches (pin header) pour brancher le bouton Reset du boîtier.
+* **Bouton de Façade :** Connecteur JST (2 broches) pour brancher le bouton Reset de la façade du boîtier de manière sécurisée et polarisée.
 * **Fonctionnement :** Ces deux éléments sont câblés en parallèle. Appuyer sur l'un d'eux met simplement la ligne globale `/RESET` (broche `c2`) à la masse (`GND`).
 
 ## 4. Intégrité des Signaux et Pull-ups
@@ -60,4 +63,3 @@ Le câblage tire parti des rangées `a` et `c` du DIN 41612. Les broches de la r
 | **25** | 🟠 `BE` | ⚪ *Réservé* | Bus Enable (DMA) |
 | **26 à 31** | ⚪ *Libre / User* | ⚪ *Libre / User* | Signaux Customisés (Vidéo, Audio, etc.) |
 | **32** | 🔴 `GND` | 🔴 `GND` | Masse Globale |
-
