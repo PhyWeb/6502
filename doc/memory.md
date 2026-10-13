@@ -1,27 +1,62 @@
-# Documentation Technique - Cartes Mémoire (RAM, ROM & MMU)
+# Documentation Technique - Carte Mémoire Unifiée & Gestion Cartouche
 
 ## 1. Vue d'Ensemble de l'Architecture
-L'architecture de la mémoire de l'ordinateur repose sur un système de banques (MMU) capable de gérer 512 Ko de RAM et 512 Ko de ROM. Le décodage d'adresse n'est pas centralisé sur le fond de panier, mais distribué : chaque module mémoire embarque sa propre puce logique (ATF16V8B) pour décider quand il doit interagir avec le bus. Cette méthode permet de réduire considérablement l'espace nécessaire pour les Entrées/Sorties.
+Dans cette architecture optimisée, la gestion de la mémoire (RAM et ROM) est centralisée sur une seule et unique carte. Le port d'extension pour les cartouches (Connecteur Edge) n'est plus sur une carte fille, mais directement soudé et intégré au fond de panier (Backplane) passif de l'ordinateur[cite: 1, 3]. 
 
-## 2. Spécifications de la Carte Mémoire RAM & MMU
-Cette carte est responsable de la mémoire vive du système et de la pagination.
-* **Composants principaux :** La carte intègre une puce SRAM de 512 Ko (AS6C4008-55), un GAL (ATF16V8B) pour le décodage, et un registre de banque (`74HC574`).
-* **Connectivité externe :** La carte ne possède aucun port externe.
-* **Zone de RAM Fixe :** Le GAL force matériellement les 8 premiers Ko de l'espace mémoire (de `$0000` à `$1FFF`) sur la Banque 0 de la SRAM. Cette zone fixe et sécurisée abrite la Page Zéro, la Pile du 6502 (située en `$01`), ainsi que les variables système.
-* **Zone de RAM Bankée :** L'espace d'adressage allant de `$2000` à `$7FFF` (soit 24 Ko) sert de fenêtre mémoire. Elle pointe dynamiquement vers l'une des 32 banques de 24 Ko disponibles dans la SRAM de 512 Ko.
+Cette "Carte Mémoire Unifiée" agit comme le chef d'orchestre du système de stockage. Elle gère la mémoire vive (SRAM), la mémoire morte interne (BIOS et EHBasic), et coordonne logiciellement le transfert du bus d'adresses vers le port cartouche externe.
 
-## 3. Spécifications de la Carte ROM & Port Cartouche
-Cette carte gère la mémoire morte, le chargement du système et l'exécution de logiciels depuis des supports physiques.
-* **Composants principaux :** Elle est équipée d'une mémoire Flash de 512 Ko (39SF040-55), d'un connecteur Edge, d'un GAL (ATF16V8B) et d'un registre de banque ROM (`74HC574`).
-* **Connectivité externe :** Un connecteur Edge (de type ISA ou format cartouche standard) est situé sur le haut du boîtier pour l'insertion physique de cartouches.
-* **Zone de ROM Fixe (BIOS) :** Les 8 derniers Ko de la mémoire (plage `$E000` à `$FFFF`) sont fixés au BIOS du système. On y trouve le moniteur de démarrage, WozMon, le bootloader, les routines de bit-banging pour lire la carte SD (en SPI) et la souris, ainsi que les vecteurs d'interruption en fin de mémoire (de `$FFFA` à `$FFFF`).
-* **Espace Applicatif et Priorité matérielle :** La zone de `$8100` à `$DFFF` (environ 23,75 Ko) est dédiée à l'exécution de programmes. Si aucune cartouche n'est présente, cette plage pointe sur la Flash interne (où la Banque 1 abrite EHBasic prêt à l'emploi). En revanche, si une cartouche est insérée, une détection matérielle vient désactiver la broche `/CE` de la Flash interne. Le bus externe prend alors automatiquement la priorité sur cette plage d'adresses.
+## 2. Spécifications de la Carte Mémoire Unifiée
+* **Composants principaux :**
+  * **SRAM 512 Ko** (AS6C4008-55) : Pour la mémoire vive[cite: 3].
+  * **EEPROM / Flash 32 Ko** (ex: 28C256 ou 39SF040) : Pour la ROM interne.
+  * **GAL** (ATF16V8B) : Puce logique gérant le décodage d'adresses de tout le système[cite: 3].
+  * **Registre octal** (`74HC574`) : Utilisé pour la pagination (Banking) de la RAM et le contrôle d'activation de la cartouche[cite: 3].
+  * **Buffer Tri-State** (ex: `74HC125` ou `74HC244`) : Pour permettre au processeur de lire l'état de détection matérielle de la cartouche.
 
-## 4. Logique de Décodage (GAL) et Timings d'Horloge
-Pour que ces mémoires communiquent de manière fiable à haute fréquence (8 MHz) avec le processeur WDC 65C02S, les puces GAL doivent être programmées en respectant des règles de timing très strictes.
-* **Activation de la Puce (/CS ou /CE) :** L'équation logique activant la sélection de la puce ne doit dépendre que du bus d'adresses (`A8` à `A19`). Elle ne doit surtout pas inclure l'horloge système (`PHI2O` / `CLK`). Ainsi, la SRAM ou la Flash s'allume et commence à se préparer dès la phase basse de l'horloge.
-* **Autorisation de Sortie et d'Écriture (/OE et /WE) :** À l'inverse, les signaux contrôlant la lecture (`/OE`) ou l'écriture (`/WE`) doivent impérativement inclure le signal de l'horloge système (`PHI2O` / `CLK`) dans leur équation. C'est cette sécurité qui garantit que la mémoire n'écrira ou ne mettra ses données sur le bus que pendant la phase haute du cycle, moment où le 6502 est prêt à les traiter.
+* **Connexion :** La carte s'insère dans l'un des slots verticaux DIN 41612 (Rangées a et c) du fond de panier[cite: 1, 3].
 
-## 5. Intégration Mécanique et Électrique (Backplane)
-* **Connexion au Bus :** Les cartes mémoires s'insèrent dans les connecteurs industriels robustes DIN 41612 (64 broches, utilisant les rangées a et c) du fond de panier MECB.
-* **Alimentation et Filtrage partagé :** L'alimentation 5V est récupérée sur la broche 1 (`a1`, `c1`), et la masse sur la broche 32 (`a32`, `c32`). Les cartes RAM et ROM n'ont pas besoin d'embarquer de condensateurs électrolytiques pour lisser l'alimentation globale. Cette tâche est déléguée au fond de panier qui fournit, au pied de chaque connecteur DIN, un binôme de condensateurs composé d'un modèle électrolytique de 10 µF (pour l'appel de courant) et d'un modèle céramique de 100 nF (pour le filtrage haute fréquence).
+## 3. Map Mémoire et Pagination
+
+L'espace mémoire est découpé par le GAL de la carte unifiée. La zone Entrées/Sorties (I/O) reste strictement réservée et protégée sur une petite plage de 256 octets[cite: 3].
+
+| Plage d'Adresses | Taille | Description et Routage | 
+| ----- | ----- | ----- | 
+| `$0000 - $1FFF` | 8 Ko | **RAM Fixe (SRAM)** : Page Zéro, Pile, Variables. Forcé sur la Banque 0[cite: 3]. | 
+| `$2000 - $7FFF` | 24 Ko | **RAM Bankée (SRAM)** : Fenêtre dynamique pointant vers l'une des 32 banques[cite: 3]. | 
+| `$8000 - $80FF` | 256 o. | **Entrées / Sorties (I/O)** : Réservé aux périphériques (VIA, UART)[cite: 3] et aux registres de la carte mémoire (ex: `$8000`). | 
+| `$8100 - $DFFF` | ~23,75 Ko | **Espace Applicatif (Basculable)** : Par défaut, pointe vers la **ROM Interne** (EHBasic)[cite: 3]. Peut être basculé vers le **Port Cartouche** par le logiciel. | 
+| `$E000 - $FFFF` | 8 Ko | **ROM Fixe (BIOS)** : Pointe toujours vers la **ROM Interne**. Contient WozMon, le bootloader, les routines matérielles et vecteurs d'interruption[cite: 3]. | 
+
+## 4. Gestion de la Cartouche et Latch Logiciel
+Le système de cartouche repose sur une coopération entre le fond de panier, le registre de la carte mémoire, et le logiciel (BIOS).
+
+### A. Détection Physique (Fond de Panier -> Carte Mémoire)
+Le connecteur Edge étant sur le fond de panier[cite: 1], une broche libre du bus MECB (ex: dans les broches `a26` à `a31` ou rangée `c` libres) est définie comme le signal `/CART_DETECT`[cite: 1, 3].
+* Sur le fond de panier, insérer une cartouche relie physiquement cette ligne à la masse (`GND`).
+* Sur la carte mémoire, cette ligne est tirée à 5V (Pull-up) et connectée à l'entrée d'un **Buffer Tri-State**.
+* Le CPU peut lire l'état de ce signal en lisant une adresse I/O spécifique (ex: `LDA $8000`), ce qui active le buffer et pousse l'état (1 ou 0) sur le bit de données `D7`.
+
+### B. Activation Matérielle (Latch Logiciel `CART_EN`)
+Le composant `74HC574` possède 8 bits de sortie[cite: 3]. 
+* **5 bits** sont utilisés pour paginer les 512 Ko de SRAM (32 banques de 24 Ko)[cite: 3].
+* **1 bit** est défini comme **`CART_EN`** (Cartridge Enable).
+* Le CPU écrit dans ce registre via une adresse I/O (ex: `STA $8000`).
+* **Si `CART_EN = 0` (Par défaut au Reset) :** Le GAL force l'activation de la ROM interne sur la plage `$8100 - $DFFF`[cite: 3]. La cartouche est ignorée.
+* **Si `CART_EN = 1` :** Le GAL désactive la ROM interne sur la plage `$8100 - $DFFF` et libère le bus, permettant à la cartouche de répondre aux requêtes d'adresse[cite: 3].
+
+## 5. Séquence de Démarrage (Boot Menu)
+Puisque le signal `CART_EN` est initialisé à `0` lors d'un Reset matériel, la machine démarre **toujours** sur la ROM interne (le BIOS) en `$E000`, indépendamment de la présence d'une cartouche[cite: 3].
+
+Le BIOS exécute la séquence suivante :
+1. **Initialisation :** Setup du processeur et des registres VIA.
+2. **Vérification Cartouche :** Le logiciel lit le registre d'état (`LDA $8000`). Il regarde le bit `D7`.
+3. **Affichage du Menu :** L'ordinateur affiche un menu (via le port série) avec 3 choix principaux :
+   * **[1] Lancer EHBasic :** Fait un simple `JMP` vers l'adresse d'EHBasic situé dans la ROM interne en `$8100`[cite: 3].
+   * **[2] Lancer la Cartouche :** Uniquement si le bit `D7` indique une présence. Le logiciel met `CART_EN` à `1` (`STA $8000`), ce qui fait disparaître EHBasic du bus au profit de la cartouche, puis effectue un saut (`JMP $8100`) ou lit le vecteur de la cartouche[cite: 3].
+   * **[3] WozMon (Moniteur) :** Reste dans le BIOS en ROM fixe pour permettre l'envoi de code en SRAM via le port série[cite: 3].
+
+## 6. Conception des Cartouches (Architecture "Mapper")
+Afin de conserver une Carte Mémoire simple, la logique de pagination (Banking) des jeux volumineux n'est pas gérée par la carte mère.
+* Une cartouche simple (≤ 23,75 Ko) ne contient qu'une puce ROM reliée directement au connecteur Edge.
+* Une cartouche évoluée (ex: 512 Ko) doit embarquer **sa propre puce de registre** (son propre `74HC574` ou circuit logique équivalent) pour servir de "Mapper".
+* Ce composant embarqué écoutera le bus d'adresses et changera les banques de la ROM de la cartouche lorsqu'il interceptera des écritures du CPU sur une adresse I/O allouée aux cartouches (ex: `$8010`).

@@ -10,15 +10,15 @@
 
 * **Philosophie :**
 
-  * **Flexibilité totale :** Fond de panier 100% passif (Broches réservées routées pour évolutions futures, ex: bus 24-bits, DMA).
+  * **Flexibilité totale :** Fond de panier passif avec port cartouche intégré. (Broches réservées routées pour évolutions futures, ex: bus 24-bits, DMA).
 
   * **Décodage distribué :** Chaque module embarque sa propre puce logique (ATF16V8B) pour déterminer quand il doit interagir avec le bus, réduisant l'espace I/O nécessaire.
 
   * **Autonomie des cartes :** Les fonctions critiques (contrôle de flux série, carte SD) sont gérées localement sur chaque carte pour éviter la dépendance au fond de panier.
 
-  * **Gestion de la mémoire (MMU) :** Système de banques (512 Ko RAM / 512 Ko ROM).
+  * **Gestion de la mémoire (MMU) :** Carte mémoire unifiée (512 Ko SRAM / 32 Ko ROM Interne) avec basculement logiciel vers le port cartouche externe. La pagination avancée (Mapper) est déléguée aux cartouches.
 
-  * **Chargement hybride :** Via port Série (Moniteur), via Lecteur Virtuel (SD) ou via Cartouches physiques.
+  * **Chargement hybride :** Via Menu de Démarrage (Boot Menu) proposant EHBasic (depuis la ROM interne), WozMon (Série), ou l'exécution de la Cartouche.
 
 ## 2. Architecture du Bus Modulaire (Backplane : MECB)
 
@@ -31,7 +31,7 @@ Le système repose sur un bus passif utilisant des connecteurs industriels robus
 
 * Bus d'Adresses (`A0-A15` standards, `A16-A23` sur broches réservées) et Bus de Données (`D0-D7`).
 
-* Signaux de Contrôle : `CLK` (Généré par la broche `PHI2O` sortante du CPU), `/WR`, `/RD`, `/IORQ`, `/MREQ`, `/RESET`, `/INT`, `/NMI`, `BE`, `RDY`.
+* Signaux de Contrôle : `CLK` (Généré par la broche `PHI2O` sortante du CPU), `/WR`, `/RD`, `/IORQ`, `/MREQ`, `/RESET`, `/INT`, `/NMI`, `BE`, `RDY`. Une broche libre est utilisée pour le signal `/CART_DETECT`.
 
 ## 3. Map Mémoire (Memory Map)
 
@@ -41,9 +41,9 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 | ----- | ----- | ----- | ----- | 
 | `$0000 - $1FFF` | 8 Ko | **RAM Fixe** | Page Zéro, Pile (`$01`), Variables Système. Forcé sur la Banque 0 de la SRAM. | 
 | `$2000 - $7FFF` | 24 Ko | **RAM Bankée** | Fenêtre pointant sur l'une des 32 banques (de 24 Ko) de la SRAM. | 
-| `$8000 - $80FF` | 256 octets | **Entrées / Sorties (I/O)** | Périphériques : VIA #1 (Joueurs), UART + VIA #2 (Série/SD), Registres MMU. | 
-| `$8100 - $DFFF` | \~23,75 Ko | **Cartouche / ROM Bankée** | Espace applicatif. Exécute la Cartouche si insérée, sinon pointe sur la Flash interne. | 
-| `$E000 - $FFFF` | 8 Ko | **ROM Fixe (BIOS)** | Moniteur série, Bootloader, et Vecteurs d'interruption (`$FFFA-$FFFF`). | 
+| `$8000 - $80FF` | 256 octets | **Entrées / Sorties (I/O)** | Périphériques : VIA #1 (Joueurs), UART + VIA #2 (Série/SD), Registres MMU et Cartouche (ex: `$8000`). | 
+| `$8100 - $DFFF` | ~23,75 Ko | **Espace Applicatif (Basculable)** | Par défaut, pointe sur la **ROM Interne** (EHBasic). Peut être basculé sur le **Port Cartouche** par le logiciel. | 
+| `$E000 - $FFFF` | 8 Ko | **ROM Fixe (BIOS)** | Moniteur série, Bootloader, et Vecteurs d'interruption (`$FFFA-$FFFF`). Fixé matériellement à la **ROM Interne**. | 
 
 ## 4. Description des Modules Principaux
 
@@ -57,13 +57,13 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 * **Horloge :** L'oscillateur 8 MHz entre dans `PHI2` (Pin 37). Le processeur conditionne le signal et le ressort sur `PHI2O` (Pin 39). C'est ce signal `PHI2O` (nommé `CLK` sur le bus MECB) qui cadence tout le système.
 
-### B. Carte Mémoire RAM & MMU
+### B. Carte Mémoire Unifiée (RAM, ROM & Cartouche)
 
 * **Ports Externes :** Aucun.
 
-* **Composants :** AS6C4008-55 (512 Ko SRAM), ATF16V8B, `74HC574` (Registre de banque).
+* **Composants :** AS6C4008-55 (512 Ko SRAM), EEPROM/Flash (32 Ko), ATF16V8B (GAL), `74HC574` (Registre 8-bits), Buffer Tri-State (ex: `74HC125`).
 
-* **Rôle :** Le GAL gère l'activation de la SRAM et le forçage matériel des 8 premiers Ko (`$0000-$1FFF`) sur la Banque 0.
+* **Rôle :** Le GAL gère l'activation de la SRAM et le forçage matériel des 8 premiers Ko (`$0000-$1FFF`) sur la Banque 0. Le `74HC574` utilise 5 bits pour la pagination de la SRAM et 1 bit (`CART_EN`) pour activer/désactiver l'accès au port cartouche. Le Buffer Tri-State permet au CPU de lire le signal `/CART_DETECT`.
 
 ### C. Carte E/S (Joueurs : Clavier, Souris & Manettes NES)
 
@@ -79,7 +79,7 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
   * *Port B (Broches 4-5) :* **Souris PS/2** (`CLOCK` et `DATA` branchés en direct).
 
-* **Gestion Souris (Bit-Banging) :** La souris nécessitant une communication bidirectionnelle, elle est gérée en *bit-banging* par le 6502 (\~11% de charge CPU uniquement durant le mouvement).
+* **Gestion Souris (Bit-Banging) :** La souris nécessitant une communication bidirectionnelle, elle est gérée en *bit-banging* par le 6502 (~11% de charge CPU uniquement durant le mouvement).
 
 ### D. Carte Communication Série & Lecteur Virtuel SD
 
@@ -89,33 +89,29 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 * **Autonomie :** Le VIA #2 est présent sur la même carte que l'UART pour gérer le `RTS`/`CTS` localement. Les broches restantes pilotent la carte MicroSD en SPI (bit-banging) pour servir de "lecteur de disquettes" virtuel.
 
-### E. Carte ROM / Port Cartouche
-
-* **Ports Externes (Haut du boîtier) :** 1x Connecteur Edge (Type ISA ou Cartouche standard).
-
-* **Composants :** 39SF040-55 (512 Ko Flash), Connecteur Edge, ATF16V8B, `74HC574` (Registre de banque ROM).
-
-* **Fonctionnement :** L'insertion d'une cartouche désactive la broche `/CE` de la Flash interne via une détection matérielle, donnant la priorité au bus externe sur la plage `$8100-$DFFF`.
-
 ## 5. Logiciel & Firmware (Software Stack)
 
-* **BIOS / Bootloader (ROM Fixe 8 Ko) :**
+* **BIOS / Bootloader (ROM Fixe) :**
 
-  * Détection de signature de cartouche (`$8100-$8101`). Si présente -> `JMP $8102`.
+  * Affichage du **Menu de Démarrage (Boot Menu)** avec 3 options : (1) Lancer EHBasic, (2) Lancer la Cartouche, (3) Lancer WozMon.
+
+  * Lecture du registre d'état (Buffer Tri-State) pour détecter la présence physique d'une cartouche avant d'autoriser l'option 2.
+
+  * Basculement logiciel (`CART_EN`) pour libérer le bus `$8100-$DFFF` et exécuter le code cartouche.
 
   * Contournement logiciel du bug WDC 65C51 (transmission) via boucle d'attente (délai).
 
-  * Menu série de démarrage et exécution de **WozMon**.
-
   * Routines de bit-banging pour la lecture de la carte SD (SPI) et de la souris PS/2.
 
-* **Environnement de Travail (ROM Bankée - Banque 1) :**
+* **Environnement de Travail (ROM Interne) :**
 
   * **EHBasic** prêt à l'emploi.
 
 ## 6. Conception du Fond de Panier (Backplane PCB Design)
 
 * **Topologie des Slots :** 8 ports DIN 41612 (Type C, rangées a et c). 7 ports verticaux pour les cartes de base, et 1 port horizontal (coudé à 90°) pour faciliter le débogage (analyseur logique) ou servir de futur port d'extension.
+
+* **Port Cartouche Intégré :** Un connecteur Edge (Type ISA ou cartouche standard) est soudé sur le backplane. L'insertion met la broche `/CART_DETECT` à la masse.
 
 * **Alimentation Intégrée :** Le circuit d'alimentation est directement sur le backplane : connecteur Barrel Jack (5V), transistor MOSFET Canal P (pour la protection contre l'inversion sans chute de tension), gros condensateurs de filtrage (ex: 1000µF) en entrée, et un duo de condensateurs de découplage (10µF électrolytique + 100nF céramique) au plus près de chaque port DIN pour garantir la stabilité de chaque carte fille.
 
@@ -139,6 +135,8 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 ## 7. Évolutions Futures (Roadmap)
 
+* **Mappers dans les Cartouches :** La carte mémoire centrale ne gère pas la pagination du port cartouche. Les jeux volumineux embarqueront leur propre registre (ex: `74HC574`) pour paginer leur ROM via une adresse I/O dédiée (ex: `$8010`).
+
 * **Carte Son :** YM2149F ou AY-3-8910 (Sortie externe : Jack 3.5mm Audio Out).
 
 * **Carte Vidéo (VDP) :** Yamaha V9958 ou TMS9918A (Sortie externe : Composite / S-Video / VGA).
@@ -149,19 +147,7 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 
 ### Le brochage optimisé (Bus 6502 Direct - Prêt pour DMA et 65C816)
 
-**Code Couleur :**
-
-* 🔴 Alimentation (Power)
-
-* 🔵 Bus de Données (Data Bus, 8-bit)
-
-* 🟢 Bus d'Adresses (Address Bus, 64 Ko natif)
-
-* 🟣 Extension d'Adresses (Address Bus Ext, 16 Mo pour futur 65C816)
-
-* 🟠 Signaux de Contrôle 6502
-
-* ⚪ Réservé / Libre (*resv* / *user*)
+*(Note: Le signal `/CART_DETECT` sera assigné à l'une des broches "libres / user" de 26 à 31).*
 
 | Broche DIN | Rangée a (Côté Gauche du CPU) | Rangée c (Côté Droit du CPU) | Explication du routage | 
 | ----- | ----- | ----- | ----- | 
@@ -190,7 +176,7 @@ L'espace Entrées/Sorties est drastiquement réduit à 256 octets grâce au déc
 | **23** | 🟣 `A22` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits | 
 | **24** | 🟣 `A23` *(Futur 65C816)* | ⚪ *réservé* | Extension adresse 24-bits | 
 | **25** | 🟠 `BE` *(CPU Pin 36)* | ⚪ *libres / user* | Bus Enable (DMA / Multi-CPU) | 
-| **26 à 31** | ⚪ *libres / user* | ⚪ *libres / user* | Signaux personnalisés (audio, vidéo, I/O) | 
+| **26 à 31** | ⚪ *libres / user* | ⚪ *libres / user* | Signaux personnalisés (`/CART_DETECT`, audio, vidéo, I/O) | 
 | **32** | 🔴 `GND` | 🔴 `GND` | Masse globale (Bas du connecteur). | 
 
 ## Annexe : GALs et timings
@@ -201,7 +187,7 @@ Chip Select (/CS ou /CE) : L'équation qui active la mémoire NE DOIT PAS inclur
 
 Output Enable (/OE pour la lecture) et Write Enable (/WE pour l'écriture) : Ces signaux DOIVENT inclure l'horloge système (PHI2O / CLK) dans l'équation du GAL. C'est ce qui garantit que la SRAM ou la Flash n'écrit ou ne pousse ses données sur le bus que lorsque le 6502 est prêt (phase haute).
 
-Exemple simplifié d'équation pour la RAM (\$0000 - $7FFF) :
+Exemple simplifié d'équation pour la RAM ($0000 - $7FFF) :
 RAM_CS = !A15 ;
 RAM_OE = RAM_CS & PHI2O & RW ; (Sort les données uniquement sur phase haute)
 RAM_WE = RAM_CS & PHI2O & !RW ; (Écrit uniquement sur phase haute)
