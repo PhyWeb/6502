@@ -8607,7 +8607,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm"
 			(at 248.92 54.9148 0)
 			(hide yes)
 			(show_name no)
@@ -8796,7 +8796,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm"
 			(at 100.33 90.4748 0)
 			(hide yes)
 			(show_name no)
@@ -9224,7 +9224,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm"
 			(at 100.33 84.1248 0)
 			(hide yes)
 			(show_name no)
@@ -9578,46 +9578,46 @@
 			)
 		)
 		(pin "10"
-			(uuid "50e12101-0f81-4df4-b616-3913c08b379e")
+			(uuid "50e12101-0f81-4df4-b616-3913c08b379f")
 		)
 		(pin "7"
-			(uuid "b3a529e5-e458-4cde-8bd4-4a482b654a6a")
+			(uuid "b3a529e5-e458-4cde-8bd4-4a482b654a6b")
 		)
 		(pin "2"
-			(uuid "6e5b96bb-d46b-4ddc-b3ba-8a0fdedbf247")
+			(uuid "6e5b96bb-d46b-4ddc-b3ba-8a0fdedbf248")
 		)
 		(pin "13"
-			(uuid "7ac5071e-9ae6-4e43-a992-829c97712885")
+			(uuid "7ac5071e-9ae6-4e43-a992-829c97712886")
 		)
 		(pin "1"
-			(uuid "4a60d2cb-539a-46a9-9a9c-cef88b6e9243")
+			(uuid "4a60d2cb-539a-46a9-9a9c-cef88b6e9244")
 		)
 		(pin "8"
-			(uuid "b0176f21-47bb-4cad-a5d5-f58630e51416")
+			(uuid "b0176f21-47bb-4cad-a5d5-f58630e51417")
 		)
 		(pin "9"
-			(uuid "dc6514b9-8d16-4d6e-9e03-5bec9dd735bd")
+			(uuid "dc6514b9-8d16-4d6e-9e03-5bec9dd735be")
 		)
 		(pin "4"
-			(uuid "9c65b1a0-5ddc-41de-a323-b506f526bef3")
+			(uuid "9c65b1a0-5ddc-41de-a323-b506f526bef4")
 		)
 		(pin "12"
-			(uuid "662010f9-633d-4660-b9ab-c25949206300")
+			(uuid "662010f9-633d-4660-b9ab-c25949206301")
 		)
 		(pin "14"
-			(uuid "45b54cfc-c03e-47a6-9c93-bece080331fd")
+			(uuid "45b54cfc-c03e-47a6-9c93-bece080331fe")
 		)
 		(pin "6"
-			(uuid "eaef643e-55c9-491b-925d-3271b05c4cfb")
+			(uuid "eaef643e-55c9-491b-925d-3271b05c4cfc")
 		)
 		(pin "11"
-			(uuid "dbf62e88-f1be-4cff-821a-a0e1d2ddb2a3")
+			(uuid "dbf62e88-f1be-4cff-821a-a0e1d2ddb2a4")
 		)
 		(pin "5"
-			(uuid "fdc0da23-373f-4e97-922c-c70462e06bee")
+			(uuid "fdc0da23-373f-4e97-922c-c70462e06bef")
 		)
 		(pin "3"
-			(uuid "cba8209c-358e-469d-a173-1a27074f092b")
+			(uuid "cba8209c-358e-469d-a173-1a27074f092c")
 		)
 		(instances
 			(project "cpu"
@@ -9936,46 +9936,46 @@
 			)
 		)
 		(pin "10"
-			(uuid "50e12101-0f81-4df4-b616-3913c08b379e")
+			(uuid "50e12101-0f81-4df4-b616-3913c08b37a0")
 		)
 		(pin "7"
-			(uuid "b3a529e5-e458-4cde-8bd4-4a482b654a6a")
+			(uuid "b3a529e5-e458-4cde-8bd4-4a482b654a6c")
 		)
 		(pin "2"
-			(uuid "6e5b96bb-d46b-4ddc-b3ba-8a0fdedbf247")
+			(uuid "6e5b96bb-d46b-4ddc-b3ba-8a0fdedbf249")
 		)
 		(pin "13"
-			(uuid "7ac5071e-9ae6-4e43-a992-829c97712885")
+			(uuid "7ac5071e-9ae6-4e43-a992-829c97712887")
 		)
 		(pin "1"
-			(uuid "4a60d2cb-539a-46a9-9a9c-cef88b6e9243")
+			(uuid "4a60d2cb-539a-46a9-9a9c-cef88b6e9245")
 		)
 		(pin "8"
-			(uuid "b0176f21-47bb-4cad-a5d5-f58630e51416")
+			(uuid "b0176f21-47bb-4cad-a5d5-f58630e51418")
 		)
 		(pin "9"
-			(uuid "dc6514b9-8d16-4d6e-9e03-5bec9dd735bd")
+			(uuid "dc6514b9-8d16-4d6e-9e03-5bec9dd735bf")
 		)
 		(pin "4"
-			(uuid "9c65b1a0-5ddc-41de-a323-b506f526bef3")
+			(uuid "9c65b1a0-5ddc-41de-a323-b506f526bef5")
 		)
 		(pin "12"
-			(uuid "662010f9-633d-4660-b9ab-c25949206300")
+			(uuid "662010f9-633d-4660-b9ab-c25949206302")
 		)
 		(pin "14"
-			(uuid "45b54cfc-c03e-47a6-9c93-bece080331fd")
+			(uuid "45b54cfc-c03e-47a6-9c93-bece080331ff")
 		)
 		(pin "6"
-			(uuid "eaef643e-55c9-491b-925d-3271b05c4cfb")
+			(uuid "eaef643e-55c9-491b-925d-3271b05c4cfd")
 		)
 		(pin "11"
-			(uuid "dbf62e88-f1be-4cff-821a-a0e1d2ddb2a3")
+			(uuid "dbf62e88-f1be-4cff-821a-a0e1d2ddb2a5")
 		)
 		(pin "5"
-			(uuid "fdc0da23-373f-4e97-922c-c70462e06bee")
+			(uuid "fdc0da23-373f-4e97-922c-c70462e06bf0")
 		)
 		(pin "3"
-			(uuid "cba8209c-358e-469d-a173-1a27074f092b")
+			(uuid "cba8209c-358e-469d-a173-1a27074f092d")
 		)
 		(instances
 			(project "cpu"
@@ -10717,7 +10717,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm"
 			(at 236.22 151.4348 0)
 			(hide yes)
 			(show_name no)
