@@ -1,49 +1,44 @@
 # Carte CPU (W65C02S) - Documentation Technique
 
 ## 1. Philosophie de la Carte
-Cette carte constitue le cœur du système modulaire. Le processeur WDC 65C02S pilote directement le fond de panier MECB modifié (incluant désormais la préparation au DMA via les signaux `BE` et `RDY`), s'appuyant sur les plans d'alimentation du PCB 4 couches et l'intégration locale du décodage (GAL) sur les cartes filles.
+Cette carte constitue le cœur du système modulaire. Le processeur **WDC W65C02S** pilote directement le fond de panier MECB (incluant la préparation au DMA via `BE` et `RDY`). Pour garantir une marge de timing maximale à **8 MHz**, l'horloge système est distribuée en parallèle directement depuis la sélection d'horloge vers l'entrée `PHI2` du CPU et la ligne `CLK` du bus fond de panier.
 
-## 2. Câblage du Processeur (WDC 65C02S - Boîtier DIP-40)
+## 2. Câblage du Processeur (WDC W65C02S - Boîtier DIP-40)
 
 | Broche(s) 65C02S | Nom | Destination / Connexion | Remarque |
 | :--- | :--- | :--- | :--- |
-| **9-20, 22-25** | `A0 - A15` | Connecteur MECB (Adresses) | Pilotage direct du bus (Pin 21 = `GND`). |
-| **26 à 33** | `D0 - D7` | Connecteur MECB (Données) | Pilotage direct du bus. |
-| **8, 21** | `VDD`, `VSS` | `5V`, `GND` | Alimentation du processeur. |
-| **39** | `PHI2O` | Connecteur MECB (`CLK`) | Horloge système générée par le CPU. |
-| **34** | `R/W` | Connecteur MECB (`R/W`) | Direction de transfert (Read/Write). |
-| **4** | `/IRQ` | Connecteur MECB (`/IRQ`) | Tirage vers le 5V (Pull-up 3.3 kΩ) sur la carte CPU*. |
-| **6** | `/NMI` | Connecteur MECB (`/NMI`) | Tirage vers le 5V (Pull-up 3.3 kΩ) sur la carte CPU*. |
-| **40** | `/RES` | Connecteur MECB (`/RESET`) & DS1813 | Reçoit le signal de réinitialisation. |
-| **37** | `PHI2` | Bloc Jumpers (Horloge) | Reçoit l'horloge sélectionnée. |
-| **2** | `RDY` | Connecteur MECB (`RDY`) | Tirage vers le 5V (Pull-up 3.3 kΩ) sur le fond de panier*. Permet la mise en pause externe (DMA). |
-| **36** | `BE` | Connecteur MECB (`BE`) | Tirage vers le 5V (Pull-up 3.3 kΩ) sur le fond de panier. Permet la déconnexion des bus (DMA). |
-| **38** | `SOB` | `5V` (Direct ou Pull-up) | **Entrée critique :** Maintenue à l'état haut pour empêcher le déclenchement erratique du flag Overflow par les parasites. |
-| **1, 5** | `VPB`, `SYNC` | Non Connectées (NC) | Sorties. Possibilité d'ajouter des points de test. *(Broche 44 MLB retirée car exclusive aux boîtiers CMS).* |
+| **9-20, 22-25** | `A0 - A15` | Connecteur MECB (`a5-a16`, `c13-c16`) | Pilotage direct du bus (Pin 21 = `GND`). |
+| **26 à 33** | `D0 - D7` | Connecteur MECB (`c5-c12`) | Pilotage direct du bus de données. |
+| **8, 21** | `VDD`, `VSS` | `5V`, `GND` | Alimentation du processeur + capa `100 nF` au plus près. |
+| **37** | `PHI2` | Bloc Jumpers (Horloge) **&** MECB (`CLK` `c3`) | Reçoit l'horloge sélectionnée en même temps que le bus MECB. |
+| **39** | `PHI2O` | Non Connectée (NC) / Point de test | Non utilisée à 8 MHz pour éviter le retard de propagation interne du CPU. |
+| **34** | `R/W` | Connecteur MECB (`R/W` `c4`) | Direction de transfert (Read = `1`, Write = `0`). |
+| **4** | `/IRQ` | Connecteur MECB (`/IRQ` `a3`) | Pull-up de **3.3 kΩ** vers `5V` présent sur cette carte CPU. |
+| **6** | `/NMI` | Connecteur MECB (`/NMI` `a4`) | Pull-up de **3.3 kΩ** vers `5V` présent sur cette carte CPU. |
+| **40** | `/RES` | Connecteur MECB (`/RES` `c2`) & DS1813 | Reçoit et diffuse le signal de réinitialisation. |
+| **2** | `RDY` | Connecteur MECB (`RDY` `a2`) | Pull-up de 3.3 kΩ sur le fond de panier (Pause / DMA). |
+| **36** | `BE` | Connecteur MECB (`BE` `a25`) | Pull-up de 3.3 kΩ sur le fond de panier (Haute impédance / DMA). |
+| **38** | `SOB` | `5V` (ou Pull-up 3.3 kΩ) | **Entrée critique :** Maintenue à l'état haut pour bloquer le flag Overflow. |
+| **1, 5, 3, 35** | `VPB`, `SYNC`, `PHI1O`, `NC` | Points de test (NC) | Sorties d'état / broches non connectées. |
 
 ## 3. Circuit de Reset (Superviseur DS1813)
-Le composant **DS1813** remplace les circuits RC traditionnels. Il garantit une initialisation parfaite du processeur et du fond de panier, avec un temps de maintien de 150 ms (laissant l'oscillateur se stabiliser). 
+Le composant **DS1813** (boîtier TO-92) remplace les circuits RC traditionnels et garantit un maintien du Reset à `0V` pendant **150 ms** après la stabilisation du 5V ou après le relâchement du bouton Reset.
 
-*Architecture de Reset Distribué :*
-- **Connexions du DS1813 :** Broches d'alimentation sur `5V` et `GND`.
-- **Sortie `/RST` :** Connectée à la broche 40 (`/RES`) du 65C02S **et** à la ligne `/RESET` du bus MECB.
-- **Pull-up :** Aucun pull-up additionnel n'est requis sur la carte CPU pour le reset (le DS1813 intègre déjà un pull-up de ~5.5 kΩ). Une résistance de tirage de 3.3 kΩ se trouve sur le fond de panier.
-- **Bouton Reset :** Un bouton poussoir est présent sur le fond de panier pour les tests, doublé d'un connecteur pour le bouton déporté en façade du boîtier (reliant la ligne globale `/RESET` à la Masse). Le DS1813 sur la carte CPU détectera cette mise à la masse, absorbera les rebonds matériels, et prolongera le signal à 0V pendant 150 ms pour garantir un démarrage synchronisé de l'ordinateur.
+* **Connexions :** Broche `VCC` au `5V`, broche `GND` à la masse, broche `/RST` reliée à la fois à la broche 40 (`/RES`) du W65C02S et à la broche `c2` (`/RES`) du connecteur MECB.
+* **Fonctionnement bidirectionnel :** Lorsqu'un bouton Reset (situé sur le fond de panier ou en façade) tire la ligne `c2` à la masse, le DS1813 détecte ce front descendant, filtre les rebonds mécaniques et maintient proprement toute la ligne `/RES` (CPU + Registre MMU `74HC273` + Cartouche) à `0V` pendant 150 ms.
 
 ## 4. Génération et Sélection d'Horloge
-Le système d'horloge fournit plusieurs fréquences sélectionnables via un bloc de cavaliers (jumpers), allant de la pleine vitesse (jusqu'à 8 MHz) à un mode pas-à-pas externe pour le débogage.
+Le système d'horloge fournit plusieurs fréquences sélectionnables par cavalier (jumper), de 8 MHz jusqu'au mode pas-à-pas.
 
-- **Source Primaire :** Oscillateur actif (boîtier métal 4 broches, sur support tulipe pour échange facile). Connecté au `5V`, `GND`, avec sa sortie vers le diviseur et le bloc de sélection.
-- **Diviseur (74HC393 - Utilisation d'un seul compteur sur les deux) :**
-  - Entrée `1CP` (Pin 1) : Reçoit le signal natif 8 MHz de l'oscillateur.
-  - Entrée `1MR` (Pin 2) : Connectée à `GND`.
-  - Sorties utilisées : `1Q0` (4 MHz), `1Q1` (2 MHz), `1Q2` (1 MHz), `1Q3` (500 kHz).
-  - *Gestion de la moitié inutilisée :* Les entrées `2CP` (Pin 12) et `2MR` (Pin 13) sont reliées à `GND` pour éviter les oscillations parasites. Les sorties `2Q` sont laissées non connectées.
-- **Entrée Externe (Pas-à-pas) :** Pin connectée à la source d'horloge manuelle externe (déjà conditionnée anti-rebond).
-- **Bloc de Sélection (Jumpers) :** Connecteur 2x6 pins. La rangée de gauche expose chaque fréquence disponible + l'entrée externe. La rangée de droite est commune et achemine le signal sélectionné vers l'entrée **`PHI2`** (Broche 37) du 65C02S. *(Attention : un changement de cavalier à chaud provoque des glitchs d'horloge ; toujours éteindre ou maintenir le reset enfoncé pendant la manipulation).*
+* **Source Primaire :** Oscillateur actif **8 MHz** (format DIP-14 ou DIP-8 métal sur support tulipe).
+* **Diviseur de Fréquence (`74HC393`) :**
+  * Entrée `1CP` (Pin 1) : Reçoit le signal 8 MHz de l'oscillateur.
+  * Entrée `1MR` (Pin 2) : Reliée à `GND`.
+  * Sorties : `1Q0` (**4 MHz**), `1Q1` (**2 MHz**), `1Q2` (**1 MHz**), `1Q3` (**500 kHz**).
+  * *Seconde moitié inutilisée :* Les entrées `2CP` (Pin 12) et `2MR` (Pin 13) sont reliées à `GND`.
+* **Entrée Externe (Pas-à-pas) :** Connecteur 2 broches pour injecter une horloge manuelle anti-rebond.
+* **Bloc de Sélection (Jumpers 2x6) :** Sélectionne la source (8 MHz, 4 MHz, 2 MHz, 1 MHz, 500 kHz, Externe) et l'envoie simultanément sur l'entrée **`PHI2` (Pin 37)** du CPU et sur la broche **`CLK` (`c3`)** du bus MECB. *(Ne jamais déplacer le cavalier sous tension sans maintenir le bouton Reset enfoncé).*
 
-## 5. Découplage et Intégrité du Signal
-La stabilité à haute fréquence sans l'utilisation de buffers de bus dépend strictement de la propreté de l'alimentation locale.
-
-- **Découplage IC :** Un condensateur céramique de **100 nF** doit être placé le plus près possible des broches `5V` et `GND` de chaque circuit intégré (65C02S, DS1813, 74HC393, Oscillateur).
-- **Filtrage Global :** Aucun condensateur électrolytique n'est présent sur la carte. Le lissage des appels de courant globaux est délégué au fond de panier (qui dispose d'un condensateur réservoir de 10 µF assigné à chaque slot).
+## 5. Découplage Local
+* Un condensateur céramique de **100 nF** est placé au plus près des broches d'alimentation de chaque composant (`W65C02S`, `74HC393`, `Oscillateur`).
+* Le filtrage basse fréquence est assuré par le condensateur de **10 µF** présent au pied du slot DIN sur le fond de panier.
